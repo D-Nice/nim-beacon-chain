@@ -205,15 +205,15 @@ const
   ConcurrentConnections* = 10
     ## Maximum number of active concurrent connection requests.
 
-  SeenTableTimeTimeout* = 10.minutes
+  SeenTableTimeTimeout* = 5.seconds
     ## Seen period of time for timeout connections
-  SeenTableTimeDeadPeer* = 10.minutes
+  SeenTableTimeDeadPeer* = 5.seconds
     ## Period of time for dead peers.
   SeenTableTimeIrrelevantNetwork* = 24.hours
     ## Period of time for `IrrelevantNetwork` error reason.
-  SeenTableTimeClientShutDown* = 10.minutes
+  SeenTableTimeClientShutDown* = 5.seconds
     ## Period of time for `ClientShutDown` error reason.
-  SeemTableTimeFaultOrError* = 10.minutes
+  SeemTableTimeFaultOrError* = 5.seconds
     ## Period of time for `FaultOnError` error reason.
 
 template neterr(kindParam: Eth2NetworkingErrorKind): auto =
