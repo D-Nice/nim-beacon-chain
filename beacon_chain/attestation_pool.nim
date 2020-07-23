@@ -155,14 +155,14 @@ proc slotIndex(
 
   int(attestationSlot - pool.startingSlot)
 
-func updateLatestVotes(
+proc updateLatestVotes(
     pool: var AttestationPool, state: BeaconState, attestationSlot: Slot,
     participants: seq[ValidatorIndex], blck: BlockRef, targetEpoch: Epoch) =
 
   for validator in participants:
     # ForkChoice v1
     let
-      pubKey = state.validators[validator].pubkey
+      pubKey = state.validators[validator].pubkey.initPubKey
       current = pool.latestAttestations.getOrDefault(pubKey)
     # TODO using attestationSlot here is wrong, it should be target epoch -
     #      clean this up
@@ -471,7 +471,7 @@ func latestAttestation(
 # The structure of this code differs from the spec since we use a different
 # strategy for storing states and justification points - it should nonetheless
 # be close in terms of functionality.
-func lmdGhost(
+proc lmdGhost(
     pool: AttestationPool, start_state: BeaconState,
     start_block: BlockRef): BlockRef =
   # TODO: a Fenwick Tree datastructure to keep track of cumulated votes
@@ -487,7 +487,7 @@ func lmdGhost(
 
   var latest_messages: seq[tuple[validator: ValidatorIndex, blck: BlockRef]]
   for i in active_validator_indices:
-    let pubKey = start_state.validators[i].pubkey
+    let pubKey = start_state.validators[i].pubkey.initPubKey
     if (let vote = pool.latestAttestation(pubKey); not vote.isNil):
       latest_messages.add((i, vote))
 

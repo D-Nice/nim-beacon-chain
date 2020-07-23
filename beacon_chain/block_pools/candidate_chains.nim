@@ -910,4 +910,6 @@ proc getProposer*(
         balances=state.balances
       return
 
-    return some((proposerIdx.get(), state.validators[proposerIdx.get()].pubkey))
+    return some((
+      proposerIdx.get(),
+      state.validators[proposerIdx.get()].pubkey.initPubKey))
