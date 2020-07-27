@@ -15,8 +15,8 @@
 import
   sequtils, strutils, macros, bitops,
   # Specs
-  ../../beacon_chain/spec/[beaconstate, datatypes, digest, helpers],
-  ../../beacon_chain/ssz/merkleization
+  ./spec/[beaconstate, datatypes, digest, helpers],
+  ./ssz/merkleization
 
 # TODO
 #
