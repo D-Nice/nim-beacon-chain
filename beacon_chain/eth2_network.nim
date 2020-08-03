@@ -748,18 +748,10 @@ proc toPeerInfo(r: Option[enr.TypedRecord]): PeerInfo =
   if r.isSome:
     return r.get.toPeerInfo
 
-proc dialPeer*(node: Eth2Node, peerInfo: PeerInfo) {.async.} =
+proc onPeerUpgraded(node: Eth2Node, peerInfo: PeerInfo): Future[void] {.async.} =
   logScope: peer = peerInfo.id
 
-  debug "Connecting to discovered peer"
-  await node.switch.connect(peerInfo)
   var peer = node.getPeer(peerInfo)
-  peer.wasDialed = true
-
-  #let msDial = newMultistream()
-  #let conn = node.switch.connections.getOrDefault(peerInfo.id)
-  #let ls = await msDial.list(conn)
-  #debug "Supported protocols", ls
 
   debug "Initializing connection"
   await performProtocolHandshakes(peer)
@@ -767,6 +759,15 @@ proc dialPeer*(node: Eth2Node, peerInfo: PeerInfo) {.async.} =
   inc nbc_successful_dials
   successfullyDialledAPeer = true
   debug "Network handshakes completed"
+
+proc dialPeer*(node: Eth2Node, peerInfo: PeerInfo) {.async.} =
+  logScope: peer = peerInfo.id
+
+  # var peer = node.getPeer(peerInfo)
+  # peer.wasDialed = true
+
+  debug "Connecting to discovered peer"
+  await node.switch.connect(peerInfo)
 
 proc connectWorker(network: Eth2Node) {.async.} =
   debug "Connection worker started"
@@ -875,6 +876,12 @@ proc init*(T: type Eth2Node, conf: BeaconNodeConf, enrForkId: ENRForkID,
     for msg in proto.messages:
       if msg.protocolMounter != nil:
         msg.protocolMounter result
+
+  let node = result
+  proc hook(peerInfo: PeerInfo, lifecycle: Lifecycle): Future[void] =
+    onPeerUpgraded(node, peerInfo)
+
+  switch.addHook(hook, Lifecycle.Upgraded)
 
 template publicKey*(node: Eth2Node): keys.PublicKey =
   node.discovery.privKey.toPublicKey
