@@ -72,7 +72,7 @@ logScope: topics = "beacnde"
 
 proc onBeaconBlock(node: BeaconNode, signedBlock: SignedBeaconBlock) {.gcsafe.}
 
-proc getStateFromSnapshot(conf: BeaconNodeConf): NilableBeaconStateRef =
+proc getStateFromSnapshot(conf: BeaconNodeConf): BeaconStateRef =
   var
     genesisPath = conf.dataDir/genesisFile
     snapshotContents: TaintedString
